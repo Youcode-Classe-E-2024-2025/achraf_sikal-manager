@@ -554,30 +554,37 @@ video {
   display: none;
 }
 
+.table {
+  display: table;
+}
+
 .grid {
   display: grid;
 }
 
-.w-52 {
-  width: 13rem;
+.w-60 {
+  width: 15rem;
+}
+
+.w-6 {
+  width: 1.5rem;
 }
 
 .w-48 {
   width: 12rem;
 }
 
-.bg-red-900 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(127 29 29 / var(--tw-bg-opacity, 1));
+.w-4 {
+  width: 1rem;
+}
+
+.w-40 {
+  width: 10rem;
 }
 
 .bg-green-300 {
   --tw-bg-opacity: 1;
   background-color: rgb(134 239 172 / var(--tw-bg-opacity, 1));
-}
-
-.p-3 {
-  padding: 0.75rem;
 }
 
 .p-1 {

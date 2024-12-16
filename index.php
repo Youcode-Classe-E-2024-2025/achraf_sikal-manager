@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="assets/css/output.css">
 </head>
 <body>
-    <form action="signup.php" method="post" class="grid w-48 bg-green-300 p-1">
+    <form action="signup.php" method="post" class="grid w-60 bg-green-300 p-1 w">
+        <label for="user">username: </label>
+        <input type="name" name="user" id="" required>
         <label for="email">email: </label>
         <input type="email" name="email" id="" required>
         <label for="pwd">password: </label>
