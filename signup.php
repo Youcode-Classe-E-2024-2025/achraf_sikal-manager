@@ -33,6 +33,20 @@ class signup
     public function getpassword(){
         return $this->pwd;
     }
+    public function insert(){
+        require_once "Connect.php";
+        $conn = new connect();
+        $statment = $conn->setdb("manager","select * from signup where email=?;");
+        $statment->bind_param("s",$this->email);
+        $statment->execute();
+        $result= $statment->get_result();
+        $stmt = $conn->setdb("manager","insert into signup(user,email,pwd) values(?,?,?);");
+        $stmt->bind_param("sss",$this->user,$this->email,$this->pwd);
+        if ($result->num_rows==0) {
+            $stmt->execute();
+        }
+
+    }
     // function __construct()
     // {
     //     $this->pwd=hash('sha256',$this->pwd);
@@ -55,15 +69,12 @@ function create_table($existe,$statment){
     }
 }
 
-$stmt = $connect->setdb("manager","create table signup(id int PRIMARY key AUTO_INCREMENT,email varchar(255),pwd varchar(255));");
+$stmt = $connect->setdb("manager","create table signup(id int PRIMARY key AUTO_INCREMENT,user varchar(50) not null,email varchar(255) not null,pwd varchar(255) not null);");
 create_table('signup',$stmt);
 $user = new signup();
 // echo $_POST['name'];
+
 $user->setuser($_POST['user']);
-echo $user->getuser();
-echo '<br>';
 $user->setemail($_POST['email']);
-echo $user->getemail();
-echo '<br>';
 $user->setpassword($_POST['pwd']);
-echo $user->getpassword();
+$user->insert();
