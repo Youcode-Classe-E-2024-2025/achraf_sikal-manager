@@ -40,11 +40,23 @@ class signup
 }
 require_once "Connect.php";
 $connect= new connect();
-$stmt = $connect->setdb("manager","create table signup(id int PRIMARY key AUTO_INCREMENT,email varchar(255),pwd varchar(255));");
-$stmt->close();
-// $stmt->execute();
-$iscreat = $connect->setdb("manager","selecte")
+$existe = "signup";
+function create_table($existe,$statment){
+    $connect= new connect();
+    $query = "SHOW TABLES like '$existe';";
+    $stmt = $connect->setdb("manager",$query); //tackes database name and the sql query
+    // $stmt->bind_param("s", $existe);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    if (!isset($row)) {
+        $statment->execute();
+        $statment->close();
+    }
+}
 
+$stmt = $connect->setdb("manager","create table signup(id int PRIMARY key AUTO_INCREMENT,email varchar(255),pwd varchar(255));");
+create_table('signup',$stmt);
 $user = new signup();
 // echo $_POST['name'];
 $user->setuser($_POST['user']);
