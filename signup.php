@@ -42,10 +42,23 @@ class signup
         $result= $statment->get_result();
         $stmt = $conn->setdb("manager","insert into signup(user,email,pwd) values(?,?,?);");
         $stmt->bind_param("sss",$this->user,$this->email,$this->pwd);
-        if ($result->num_rows==0) {
+        if ($result->num_rows==0 and isset($this->user) and isset($this->email) and isset($this->pwd)) {
             $stmt->execute();
+            echo '<script>location.href="http://localhost/Gestionnaire/index.html"</script>';
         }
 
+    }
+    public function login($email,$pwd){
+        require_once "Connect.php";
+        $conn = new connect();
+        $pwd = hash('sha256',$pwd);
+        $statment = $conn->setdb("manager","select * from signup where email=? and pwd=?;");
+        $statment->bind_param("ss",$email,$pwd);
+        $statment->execute();
+        $result= $statment->get_result();
+        if ($result->num_rows==1) {
+            echo '<script>location.href="http://localhost/Gestionnaire/index.html"</script>';
+        }
     }
     // function __construct()
     // {
@@ -71,10 +84,4 @@ function create_table($existe,$statment){
 
 $stmt = $connect->setdb("manager","create table signup(id int PRIMARY key AUTO_INCREMENT,user varchar(50) not null,email varchar(255) not null,pwd varchar(255) not null);");
 create_table('signup',$stmt);
-$user = new signup();
-// echo $_POST['name'];
 
-$user->setuser($_POST['user']);
-$user->setemail($_POST['email']);
-$user->setpassword($_POST['pwd']);
-$user->insert();

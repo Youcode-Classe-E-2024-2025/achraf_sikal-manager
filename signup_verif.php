@@ -12,12 +12,12 @@
         <a href="index.html" class="text-4xl font-black">logo</a>
         <div class="flex gap-5 text-white items-baseline">
             <a href="" class="underline text-black">about us</a>
-            <a href="" class="pl-2 pr-2 p-1 text-xl border border-[#4CAF4F] text-[#4CAF4F] rounded-sm hover:bg-[#4CAF4F] hover:text-white transition-colors duration-200 ease-in-out">Login</a>
+            <a href="Login.php" class="pl-2 pr-2 p-1 text-xl border border-[#4CAF4F] text-[#4CAF4F] rounded-sm hover:bg-[#4CAF4F] hover:text-white transition-colors duration-200 ease-in-out">Login</a>
         </div>
     </nav>
     <section class="flex w-full items-center justify-center">
         <img src="./assets/images/Frame 35.svg" width="40%" alt="">
-        <form action="signup.php" method="post" id="singup" class="grid w-80 p-1 text-slate-700 h-72">
+        <form action="#" method="post" id="singup" class="grid w-80 p-1 text-slate-700 h-72">
             <label for="user">username: </label>
             <input type="name" name="user" id="user" class="outline-none border border-[#4CAF4F] pl-2" required>
             <label for="email">email: </label>
@@ -54,5 +54,15 @@
         </div>
     </footer>
 </body>
-<script src="script.js"></script>
+<?php
+if (isset($_POST['user']) and isset($_POST['pwd']) and isset($_POST['email'])) {
+    require_once 'signup.php';
+    $user = new signup();
+    $user->setuser($_POST['user']);
+    $user->setemail($_POST['email']);
+    $user->setpassword($_POST['pwd']);
+    $user->insert();
+}
+?>
+<script src="./assets/js/script.js"></script>
 </html>
