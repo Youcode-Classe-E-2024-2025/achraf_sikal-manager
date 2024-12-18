@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
-    <link rel="stylesheet" href="./assets/css/output.css">
+    <title>signup</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
     <nav class="flex justify-between p-2 pl-5 pr-5">
-        <a href="index.html" class="text-4xl font-black">logo</a>
+        <a href="../../../index.html" class="text-4xl font-black">logo</a>
         <div class="flex gap-5 text-white items-baseline">
             <a href="" class="underline text-black">about us</a>
-            <a href="" class="pl-2 pr-2 p-1 text-xl border border-[#4CAF4F] text-[#4CAF4F] rounded-sm hover:bg-[#4CAF4F] hover:text-white transition-colors duration-200 ease-in-out">Login</a>
+            <a href="../login/Login.php" class="pl-2 pr-2 p-1 text-xl border border-[#4CAF4F] text-[#4CAF4F] rounded-sm hover:bg-[#4CAF4F] hover:text-white transition-colors duration-200 ease-in-out">Login</a>
         </div>
     </nav>
     <section class="flex w-full items-center justify-center">
-        <img src="./assets/images/Frame 35.svg" width="40%" alt="">
-        <form action="#" method="post" id="singup" class="grid w-80 p-1 text-slate-700 h-60">
+        <img src="../../images/Frame 35.svg" width="40%" alt="">
+        <form action="#" method="post" id="singup" class="grid w-80 p-1 text-slate-700 h-72">
+            <label for="user">username: </label>
+            <input type="name" name="user" id="user" class="outline-none border border-[#4CAF4F] pl-2" required>
             <label for="email">email: </label>
             <input type="email" name="email" id="email" class="outline-none border border-[#4CAF4F] pl-2" required>
             <label for="pwd">password: </label>
             <input type="password" name="pwd" id="pwd" class="outline-none border border-[#4CAF4F] pl-2" required>
-            <input type="submit" class="cursor-pointer pl-2 pr-2 p-1 text-xl border border-[#4CAF4F] bg-[#4CAF4F] rounded-sm hover:bg-white hover:text-[#4CAF4F] transition-colors duration-200 ease-in-out mt-4 text-white" value="login">
+            <input type="submit" class="cursor-pointer pl-2 pr-2 p-1 text-xl border border-[#4CAF4F] bg-[#4CAF4F] rounded-sm hover:bg-white hover:text-[#4CAF4F] transition-colors duration-200 ease-in-out mt-4 text-white" value="Singup" id="signbtn">
         </form>
     </section>
     <footer class="flex justify-between h-60 p-10 bg-[#0B0D17]">
@@ -51,15 +52,16 @@
             <input type="search" class="text-lg p-1 rounded-md text-gray-300 outline-none bg-gray-600 w-60 " placeholder="your email address">
         </div>
     </footer>
-    <?php
-    if (isset($_POST["email"]) and isset($_POST["pwd"])) {
-        $mail= $_POST["email"];
-        $pass= $_POST["pwd"];
-        require_once "signup.php";
-        $login = new signup();
-        $login->login($mail,$pass);
-    }
-    ?>
 </body>
-<script src="./assets/js/script.js"></script>
+<?php
+if (isset($_POST['user']) and isset($_POST['pwd']) and isset($_POST['email'])) {
+    require_once '../../../lib/php/classes/Signup.php';
+    $user = new signup();
+    $user->setuser($_POST['user']);
+    $user->setemail($_POST['email']);
+    $user->setpassword($_POST['pwd']);
+    $user->insert();
+}
+?>
+<script src="../../js/script.js"></script>
 </html>

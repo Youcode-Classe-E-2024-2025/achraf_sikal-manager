@@ -58,6 +58,8 @@ class signup
         $result= $statment->get_result();
         if ($result->num_rows==1) {
             echo '<script>location.href="http://localhost/Gestionnaire/index.html"</script>';
+        }else {
+            echo '<script>alert("email or password is incorect");</script>';
         }
     }
     // function __construct()
