@@ -28,7 +28,7 @@
     </section>
     <footer class="flex justify-between h-60 p-10 bg-[#0B0D17]">
         <div class="">
-            <a href="index.html" class="text-4xl text-white font-black">logo</a>
+            <a href="../../../index.html" class="text-4xl text-white font-black">logo</a>
             <p class="text-gray-300">Copyright© 2024 program management Kit <br> All rights reserved.</p>
         </div>
         <div class="">

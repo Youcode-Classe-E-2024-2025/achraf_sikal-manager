@@ -46,7 +46,16 @@ class signup
             $stmt->execute();
             echo '<script>location.href="http://localhost/Gestionnaire/index.html"</script>';
         }
-
+        $id=1;
+        $statment = $conn->setdb("manager","select * from admin where account=?;");
+        $statment->bind_param("i",$id);
+        $statment->execute();
+        $result= $statment->get_result();
+        $stmt = $conn->setdb("manager","insert into admin(account) values(?);");
+        $stmt->bind_param("i",$id);
+        if ($result->num_rows==0) {
+            $stmt->execute();
+        }
     }
     public function login($email,$pwd){
         require_once "Connect.php";
@@ -57,15 +66,12 @@ class signup
         $statment->execute();
         $result= $statment->get_result();
         if ($result->num_rows==1) {
+            $stmt= $conn->setdb("manager","insert into login(user) values ?;");
             echo '<script>location.href="http://localhost/Gestionnaire/index.html"</script>';
         }else {
             echo '<script>alert("email or password is incorect");</script>';
         }
     }
-    // function __construct()
-    // {
-    //     $this->pwd=hash('sha256',$this->pwd);
-    // }
 }
 require_once "Connect.php";
 $connect= new connect();
@@ -84,6 +90,9 @@ function create_table($existe,$statment){
     }
 }
 
-$stmt = $connect->setdb("manager","create table signup(id int PRIMARY key AUTO_INCREMENT,user varchar(50) not null,email varchar(255) not null,pwd varchar(255) not null);");
+$stmt = $connect->setdb("manager","CREATE TABLE signup(id int PRIMARY key AUTO_INCREMENT,user varchar(50) not null,email varchar(255) not null,pwd varchar(255) not null,activated bool NOT null,banned bool NOT null);");
 create_table('signup',$stmt);
-
+$stmt = $connect->setdb("manager","CREATE TABLE admin(id int PRIMARY KEY AUTO_INCREMENT,account int not null,FOREIGN KEY (account) REFERENCES signup(id));");
+create_table('admin',$stmt);
+$stmt = $connect->setdb("manager","CREATE TABLE login(id int PRIMARY KEY AUTO_INCREMENT,user int not null,FOREIGN KEY (user) REFERENCES signup(id));");
+create_table('login',$stmt);

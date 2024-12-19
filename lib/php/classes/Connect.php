@@ -17,10 +17,3 @@ class connect
     // {
     // }
 }
-// function connect($dbname,$query,$host="localhost",$user="root",$pwd=""){
-//     $stmt=new mysqli($host,$user,$pwd,$dbname);
-//     return $stmt->prepare($query);
-//     if ((new mysqli($host,$user,$pwd,$dbname))->connect_error) {
-//         die("Connection failed: " . (new mysqli($host,$user,$pwd,$dbname))->connect_error);
-//     }
-// }
