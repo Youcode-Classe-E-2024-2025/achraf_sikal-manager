@@ -16,7 +16,7 @@
     </nav>
     <section class="flex w-full items-center justify-center">
         <img src="../../images/Frame 35.svg" width="40%" alt="">
-        <form action="#" method="post" id="singup" class="grid w-80 p-1 text-slate-700 h-60">
+        <form action="" method="post" id="singup" class="grid w-80 p-1 text-slate-700 h-60">
             <label for="email">email: </label>
             <input type="email" name="email" id="email" class="outline-none border border-[#4CAF4F] pl-2" required>
             <label for="pwd">password: </label>

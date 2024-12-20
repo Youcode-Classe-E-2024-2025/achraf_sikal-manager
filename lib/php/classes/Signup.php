@@ -66,8 +66,25 @@ class signup
         $statment->execute();
         $result= $statment->get_result();
         if ($result->num_rows==1) {
-            $stmt= $conn->setdb("manager","insert into login(user) values ?;");
-            echo '<script>location.href="http://localhost/Gestionnaire/index.html"</script>';
+            $user = $result->fetch_assoc();
+            $stmt= $conn->setdb("manager","insert into login(user) values (?);");
+            $stmt->bind_param("i",$user["id"]);
+            $stmt->execute();
+            $statment = $conn->setdb("manager","select * from admin where account=?;");
+            $statment->bind_param("i",$user["id"]);
+            $statment->execute();
+            $res= $statment->get_result();
+            if ($res->num_rows==1) {
+                echo '<script>location.href="http://localhost/Gestionnaire/assets/pages/admin/dash.php"</script>';
+            }
+            else {
+                
+                // if () {
+                    // # code...
+                // }
+                echo '<script>location.href="http://localhost/Gestionnaire/index.html"</script>';
+            }
+            
         }else {
             echo '<script>alert("email or password is incorect");</script>';
         }
