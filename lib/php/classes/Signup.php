@@ -106,7 +106,7 @@ $stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS admin(id int PRIMA
 create_table($stmt);
 $stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS login(id int PRIMARY KEY AUTO_INCREMENT,user int not null,FOREIGN KEY (user) REFERENCES signup(id));");
 create_table($stmt);
-$stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS projects(name varchar(50) NOT null,description varchar(255),technologies varchar(200),github varchar(255),account_id int,FOREIGN key (account_id) REFERENCES signup(id));");
+$stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS projects(id int PRIMARY KEY AUTO_INCREMENT, name varchar(50) NOT null,description varchar(255),technologies varchar(200),github varchar(255),account_id int,FOREIGN key (account_id) REFERENCES signup(id));");
 create_table($stmt);
 $stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS companies(id int PRIMARY KEY AUTO_INCREMENT,name varchar(50) NOT null,work_start date not null,work_end date not null,location varchar(100),account_id int,FOREIGN key (account_id) REFERENCES signup(id));");
 create_table($stmt);

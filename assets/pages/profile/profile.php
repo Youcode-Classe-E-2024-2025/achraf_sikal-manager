@@ -15,9 +15,8 @@ if (isset($_SESSION["email"]) and isset($_SESSION["pwd"])) {
     $stmt->bind_param("s",$_SESSION["email"]);
     $stmt->execute();
     $result = $stmt->get_result();
-    if ($result->num_rows==1) {
-    }else {
-        echo'<script>location.href="../../pages/login/Login.php"</script>'; // 
+    if ($result->num_rows==0) {
+        echo'<script>location.href="../../pages/login/Login.php"</script>';
     }
 }
 else {
@@ -47,15 +46,26 @@ else {
             <!-- <button onclick="dash()" class="text-xl font-bold hover:text-[#4CAF4F]" href="">Dashbord</button> -->
             <button onclick="user()" class="text-xl font-bold hover:text-[#4CAF4F]" href="">Projects</button>
             <button onclick="admin()" class="text-xl font-bold hover:text-[#4CAF4F]" href="">Companies</button>
-            <button onclick="dash()" class="text-xl font-bold hover:text-[#4CAF4F]">Partners</button>
+            <!-- <button onclick="dash()" class="text-xl font-bold hover:text-[#4CAF4F]">Partners</button> -->
         </div>
     </nav>
-    <main id="user" class="w-3/5">
-        <div class="p-2 m-2 font-bold bg-white rounded-lg drop-shadow-lg grid grid-cols-8 justify-between items-center">
+    <main id="user" class="w-11/12">
+        <div class="grid justify-end">
+            <button onclick="addproject(this.nextElementSibling.id)" class="m-2 align-middle border border-[#4CAF4F] text-[#4CAF4F] hover:bg-[#4CAF4F] hover:text-white p-1 rounded-md">Add project</button>
+            <form id="addproject" method="post" action="" class="hidden gap-1 border border-[#4CAF4F] rounded-md p-2">
+                <input type="text" name="projname" class="outline-none rounded-md text-xl" placeholder="project name">
+                <input type="text" name="projdesc" class="outline-none rounded-md text-xl" placeholder="description">
+                <input type="text" name="projtech" class="outline-none rounded-md text-xl" placeholder="technologies">
+                <input type="url" name="projgit" class="outline-none rounded-md text-xl" placeholder="github link">
+                <input type="submit" value="ADD" class="align-middle border border-[#4CAF4F] text-[#4CAF4F] hover:bg-[#4CAF4F] hover:text-white p-1 rounded-md cursor-pointer">
+            </form>
+        </div>
+        <div class="p-2 m-2 font-bold bg-white rounded-lg drop-shadow-lg grid grid-cols-10 justify-between items-center">
             <p>name</p>
             <p class="col-start-3">description</p>
             <p class="col-start-6">technologies</p>
             <p class="col-start-8">github</p>
+            <p class="col-start-10">delete</p>
         </div>
         <?php
         require_once "../../../lib/php/classes/Connect.php";
@@ -65,118 +75,112 @@ else {
         $stmt->execute();
         $result = $stmt->get_result();
         while($row = $result->fetch_assoc()){
-                echo '<div class="p-2 m-2 bg-white rounded-lg drop-shadow-lg grid grid-cols-8 justify-between items-center">
+                echo '<div class="p-2 m-2 bg-white rounded-lg drop-shadow-lg grid grid-cols-10 justify-between items-center">
                     <p class="">',$row["name"],'</p>
-                    <p class="col-start-3">',$row["description"],'</p>
-                    <p class="col-start-6">',$row["technologies"],'</p>
-                    <p class="col-start-8">',$row["github"],'</p>'
+                    <p class="col-start-3 col-end-6">',$row["description"],'</p>
+                    <p class="col-start-6 col-end-8">',$row["technologies"],'</p>
+                    <p class="col-start-8 col-end-10 overflow-hidden">',$row["github"],'</p>
+                    <form class="col-start-10" method="post">
+                            <input type="hidden" id="delete" name="delete" value=',$row["id"],'>
+                            <input type="submit" class="align-middle border border-red-600 text-red-600 hover:bg-red-600 hover:text-white p-1 rounded-md" width="20px" value="Delete">
+                    </form>'
                     ;
                     
                 echo '</div>';
         };
+        // $packageDelete;
         function ispost($posted){
             if (isset($_POST[$posted])) {
-                $user = (int) $_POST[$posted];
+                $user = $_POST[$posted];
                 return $user;
+            }else {
+                return false;
             };
         };
-        $useractiv=ispost("activate");
-        $userdeactiv=ispost("deactivate");
-        $userban=ispost("ban");
-        $userunban=ispost("unban");
-        $activ= $conn->setdb("manager","UPDATE signup SET activated=TRUE WHERE id = ?;");
-        $activ->bind_param("i",$useractiv);
-        $activ->execute();
-        $deactiv= $conn->setdb("manager","UPDATE signup SET activated=FALSE WHERE id = ?;");
-        $deactiv->bind_param("i",$userdeactiv);
-        $deactiv->execute();
-        $ban= $conn->setdb("manager","UPDATE signup SET banned=true WHERE id = ?;");
-        $ban->bind_param("i",$userban);
-        $ban->execute();
-        $unban= $conn->setdb("manager","UPDATE signup SET banned=FALSE WHERE id = ?;");
-        $unban->bind_param("i",$userunban);
-        $unban->execute();
-        ?>
-    </main>
-    <main id="dash" class="w-3/5 hidden">
-        <div class="p-2 m-2 font-bold bg-white rounded-lg drop-shadow-lg grid grid-cols-8 justify-between items-center">
-            <p>name</p>
-            <p class="col-start-3">description</p>
-            <p class="col-start-6">technologies</p>
-            <p class="col-start-8">github</p>
-        </div>
-        <?php
-        require_once "../../../lib/php/classes/Connect.php";
-        $conn = new connect();
-        $stmt = $conn->setdb("manager","SELECT * FROM signup INNER JOIN projects where signup.id = projects.account_id and email=?;");
-        $stmt->bind_param("s",$_SESSION["email"]);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        while($row = $result->fetch_assoc()){
-                echo '<div class="p-2 m-2 bg-white rounded-lg drop-shadow-lg grid grid-cols-8 justify-between items-center">
-                    <p class="">',$row["name"],'</p>
-                    <p class="col-start-3">',$row["description"],'</p>
-                    <p class="col-start-6">',$row["technologies"],'</p>
-                    <p class="col-start-8">',$row["github"],'</p>'
-                    ;
-                    
-                echo '</div>';
+        if ($deleteid = ispost("delete")) {
+            $delete= $conn->setdb("manager","DELETE FROM projects WHERE id = ?;");
+            $delete->bind_param("i",$deleteid);
+            $delete->execute();
+            unset($_POST["delete"]);
+            header("location:#");
         };
-        $useractiv=ispost("activate");
-        $userdeactiv=ispost("deactivate");
-        $userban=ispost("ban");
-        $userunban=ispost("unban");
-        $activ= $conn->setdb("manager","UPDATE signup SET activated=TRUE WHERE id = ?;");
-        $activ->bind_param("i",$useractiv);
-        $activ->execute();
-        $deactiv= $conn->setdb("manager","UPDATE signup SET activated=FALSE WHERE id = ?;");
-        $deactiv->bind_param("i",$userdeactiv);
-        $deactiv->execute();
-        $ban= $conn->setdb("manager","UPDATE signup SET banned=true WHERE id = ?;");
-        $ban->bind_param("i",$userban);
-        $ban->execute();
-        $unban= $conn->setdb("manager","UPDATE signup SET banned=FALSE WHERE id = ?;");
-        $unban->bind_param("i",$userunban);
-        $unban->execute();
+        if (($name= ispost("projname")) and ($desc= ispost("projdesc")) and ($tech= ispost("projtech")) and ($git= ispost("projgit"))) {
+            $stmt = $conn->setdb("manager","SELECT * FROM signup where email=?;");
+            $stmt->bind_param("s",$_SESSION["email"]);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $id = ($result->fetch_assoc())["id"];
+            $add= $conn->setdb("manager","INSERT INTO projects (name, description, technologies, github, account_id) VALUES (?, ?, ?, ?, ?);");
+            $add->bind_param("ssssi",$name,$desc,$tech,$git,$id);
+            $add->execute();
+            unset($_POST["projname"]);
+            unset($_POST["projdesc"]);
+            unset($_POST["projtech"]);
+            unset($_POST["projgit"]);
+            header("location:#");
+        };
         ?>
     </main>
-    <main id="admin" class="w-3/5 hidden">
-        <div class="p-2 m-2 font-bold bg-white rounded-lg drop-shadow-lg grid grid-cols-8 justify-between items-center h-10">
-                <p>Email</p>
-                <p class="col-start-5">Username</p>
-                <p class="col-start-8">activation</p>
-            </div>
+    <!--  -->
+    <main id="admin" class="w-11/12 hidden">
+        <div class="grid justify-end">
+            <button onclick="addproject(this.nextElementSibling.id)" class="m-2 align-middle border border-[#4CAF4F] text-[#4CAF4F] hover:bg-[#4CAF4F] hover:text-white p-1 rounded-md">Add companie</button>
+            <form id="addcompanie" method="post" action="" class="hidden gap-1 border border-[#4CAF4F] rounded-md p-2">
+                <input type="name" name="compname" class="outline-none rounded-md text-xl" placeholder="companie's name">
+                <input type="date" name="compdesc" class="outline-none rounded-md text-xl" placeholder="start working">
+                <input type="date" name="comptech" class="outline-none rounded-md text-xl" placeholder="end working">
+                <input type="name" name="compgit" class="outline-none rounded-md text-xl" placeholder="location">
+                <input type="submit" value="ADD" class="align-middle border border-[#4CAF4F] text-[#4CAF4F] hover:bg-[#4CAF4F] hover:text-white p-1 rounded-md cursor-pointer">
+            </form>
+        </div>
+        <div class="p-2 m-2 font-bold bg-white rounded-lg drop-shadow-lg grid grid-cols-10 justify-between items-center">
+            <p>name</p>
+            <p class="col-start-3">start working</p>
+            <p class="col-start-6">end working</p>
+            <p class="col-start-8">location</p>
+            <p class="col-start-10">delete</p>
+        </div>
             <?php
-            $conn = new connect();
-            $stmt = $conn->setdb("manager","SELECT * FROM admin INNER JOIN signup where signup.id=admin.account");
+            $stmt = $conn->setdb("manager","SELECT * FROM signup INNER JOIN companies where signup.id = companies.account_id and email=?;");
+            $stmt->bind_param("s",$_SESSION["email"]);
             $stmt->execute();
             $result = $stmt->get_result();
             while($row = $result->fetch_assoc()){
-                    echo '<div class="p-2 m-2 bg-white rounded-lg drop-shadow-lg grid grid-cols-8 justify-between items-center h-20">
-                        <p class="">',$row["email"],'</p>
-                        <p class="col-start-5">',$row["user"],'</p>';
-                        if ($row["activated"]==0) { 
-                        echo '<form class="col-start-8" method="post">
-                                <input type="hidden" id="activate" name="adminactivate" value=',$row["id"],'>
-                                <input type="submit" class="align-middle border border-[#4CAF4F] text-[#4CAF4F] hover:bg-[#4CAF4F] hover:text-white p-1 rounded-md" width="20px" value="activate">
-                            </form>';
-                        }
-                        else{
-                            echo '<form class="col-start-8" method="post">
-                                <input type="hidden" id="deactivate" name="admindeactivate" value=',$row["id"],'>
-                                <input type="submit" class="align-middle border border-red-600 text-red-600 hover:bg-red-600 hover:text-white p-1 rounded-md" width="20px" value="deactivate">
-                            </form>';
-                        };
+                    echo '<div class="p-2 m-2 bg-white rounded-lg drop-shadow-lg grid grid-cols-10 justify-between items-center">
+                        <p class="">',$row["name"],'</p>
+                        <p class="col-start-3 col-end-6">',$row["work_start"],'</p>
+                        <p class="col-start-6 col-end-8">',$row["work_end"],'</p>
+                        <p class="col-start-8 col-end-10 overflow-hidden">',$row["location"],'</p>
+                        <form class="col-start-10" method="post">
+                                <input type="hidden" id="delete" name="deletecomp" value=',$row["id"],'>
+                                <input type="submit" class="align-middle border border-red-600 text-red-600 hover:bg-red-600 hover:text-white p-1 rounded-md" width="20px" value="Delete">
+                        </form>'
+                        ;
+                        
                     echo '</div>';
             };
-            $useractiv=ispost("adminactivate");
-            $userdeactiv=ispost("admindeactivate");
-            $activ= $conn->setdb("manager","UPDATE signup SET activated=TRUE WHERE id = ?;");
-            $activ->bind_param("i",$useractiv);
-            $activ->execute();
-            $deactiv= $conn->setdb("manager","UPDATE signup SET activated=FALSE WHERE id = ?;");
-            $deactiv->bind_param("i",$userdeactiv);
-            $deactiv->execute();
+            if ($deleteid = ispost("deletecomp")) {
+                $delete= $conn->setdb("manager","DELETE FROM companies WHERE id = ?;");
+                $delete->bind_param("i",$deleteid);
+                $delete->execute();
+                unset($_POST["deletecomp"]);
+                // header("location:#");
+            };
+            if (($coname= ispost("compname")) and ($codesc= ispost("compdesc")) and ($cotech= ispost("comptech")) and ($cogit= ispost("compgit"))) {
+                $stmt = $conn->setdb("manager","SELECT * FROM signup where email=?;");
+                $stmt->bind_param("s",$_SESSION["email"]);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $id = ($result->fetch_assoc())["id"];
+                $add= $conn->setdb("manager","INSERT INTO companies (name, work_start, work_end, location, account_id) VALUES (?, ?, ?, ?, ?);");
+                $add->bind_param("ssssi",$coname,$codesc,$cotech,$cogit,$id);
+                $add->execute();
+                unset($_POST["compname"]);
+                unset($_POST["compdesc"]);
+                unset($_POST["comptech"]);
+                unset($_POST["compgit"]);
+                // header("location:#");
+            };
             ?>
     </main>
     </div>
@@ -207,5 +211,11 @@ else {
         </div>
     </footer>
     <script src="./../../js/dashbord.js"></script>
+    <script>
+        function addproject(id) {
+            document.getElementById(id).classList.toggle("hidden");
+            document.getElementById(id).classList.toggle("grid");
+        }
+    </script>
 </body>
 </html>

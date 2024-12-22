@@ -10,11 +10,16 @@ if (isset($_SESSION["email"]) and isset($_SESSION["pwd"])) {
     $stmt->bind_param("s",$_SESSION["email"]);
     $stmt->execute();
     $result = $stmt->get_result();
+    $stat = $conn->setdb("manager","SELECT * FROM signup where email=?");
+    $stat->bind_param("s",$_SESSION["email"]);
+    $stat->execute();
+    $resultregulare = $stat->get_result();
     if ($result->num_rows==1) {
         require "../admin/dash.php";
-    }else {
-        require "../../../index.html";
+    }elseif($resultregulare->num_rows>=1) {
+        require '../profile/profile.php';
     }
+
 }
 ?>
 <!DOCTYPE html>
