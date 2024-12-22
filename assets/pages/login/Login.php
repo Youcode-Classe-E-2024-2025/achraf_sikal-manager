@@ -1,3 +1,22 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+require_once "../../../lib/php/classes/Connect.php";
+
+if (isset($_SESSION["email"]) and isset($_SESSION["pwd"])) {
+    $conn = new connect();
+    $stmt = $conn->setdb("manager","SELECT * FROM admin INNER JOIN signup where signup.id=admin.account and signup.email=?");
+    $stmt->bind_param("s",$_SESSION["email"]);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows==1) {
+        require "../admin/dash.php";
+    }else {
+        require "../../../index.html";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,6 +76,7 @@
         require_once "../../../lib/php/classes/signup.php";
         $login = new signup();
         $login->login($mail,$pass);
+
     }
     ?>
 </body>

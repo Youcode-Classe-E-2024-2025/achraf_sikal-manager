@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 class signup
 {
     private $user;
@@ -61,6 +61,8 @@ class signup
         require_once "Connect.php";
         $conn = new connect();
         $pwd = hash('sha256',$pwd);
+        $_SESSION["email"]= $email;
+        $_SESSION["pwd"]= $pwd;
         $statment = $conn->setdb("manager","select * from signup where email=? and pwd=?;");
         $statment->bind_param("ss",$email,$pwd);
         $statment->execute();
@@ -82,7 +84,7 @@ class signup
                 // if () {
                     // # code...
                 // }
-                echo '<script>location.href="http://localhost/Gestionnaire/index.html"</script>';
+                echo '<script>location.href="http://localhost/Gestionnaire/assets/pages/profile/profile.php"</script>';
             }
             
         }else {
@@ -93,23 +95,20 @@ class signup
 require_once "Connect.php";
 $connect= new connect();
 $existe = "signup";
-function create_table($existe,$statment){
-    $connect= new connect();
-    $query = "SHOW TABLES like '$existe';";
-    $stmt = $connect->setdb("manager",$query); //tackes database name and the sql query
-    // $stmt->bind_param("s", $existe);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    if (!isset($row)) {
-        $statment->execute();
-        $statment->close();
-    }
+function create_table($statment){
+    $statment->execute();
+    $statment->close();
 }
 
-$stmt = $connect->setdb("manager","CREATE TABLE signup(id int PRIMARY key AUTO_INCREMENT,user varchar(50) not null,email varchar(255) not null,pwd varchar(255) not null,activated bool NOT null,banned bool NOT null);");
-create_table('signup',$stmt);
-$stmt = $connect->setdb("manager","CREATE TABLE admin(id int PRIMARY KEY AUTO_INCREMENT,account int not null,FOREIGN KEY (account) REFERENCES signup(id));");
-create_table('admin',$stmt);
-$stmt = $connect->setdb("manager","CREATE TABLE login(id int PRIMARY KEY AUTO_INCREMENT,user int not null,FOREIGN KEY (user) REFERENCES signup(id));");
-create_table('login',$stmt);
+$stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS signup(id int PRIMARY key AUTO_INCREMENT,user varchar(50) not null,email varchar(255) not null,pwd varchar(255) not null,activated bool NOT null,banned bool NOT null);");
+create_table($stmt);
+$stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS admin(id int PRIMARY KEY AUTO_INCREMENT,account int not null,FOREIGN KEY (account) REFERENCES signup(id));");
+create_table($stmt);
+$stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS login(id int PRIMARY KEY AUTO_INCREMENT,user int not null,FOREIGN KEY (user) REFERENCES signup(id));");
+create_table($stmt);
+$stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS projects(name varchar(50) NOT null,description varchar(255),technologies varchar(200),github varchar(255),account_id int,FOREIGN key (account_id) REFERENCES signup(id));");
+create_table($stmt);
+$stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS companies(id int PRIMARY KEY AUTO_INCREMENT,name varchar(50) NOT null,work_start date not null,work_end date not null,location varchar(100),account_id int,FOREIGN key (account_id) REFERENCES signup(id));");
+create_table($stmt);
+$stmt = $connect->setdb("manager","CREATE TABLE IF NOT EXISTS partners(id int PRIMARY KEY AUTO_INCREMENT,name varchar(50) NOT null,relation varchar(50) not null,account_id int,FOREIGN key (account_id) REFERENCES signup(id));");
+create_table($stmt);

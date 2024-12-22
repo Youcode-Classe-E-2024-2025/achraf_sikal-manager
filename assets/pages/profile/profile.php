@@ -11,17 +11,17 @@ if (isset($_POST["logout"])) {
 }
 if (isset($_SESSION["email"]) and isset($_SESSION["pwd"])) {
     $conn = new connect();
-    $stmt = $conn->setdb("manager","SELECT * FROM admin INNER JOIN signup where signup.id=admin.account and signup.email=?");
+    $stmt = $conn->setdb("manager","SELECT * FROM signup where email=?");
     $stmt->bind_param("s",$_SESSION["email"]);
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows==1) {
     }else {
-        echo'<script>location.href="../../../index.html"</script>'; // 
+        echo'<script>location.href="../../pages/login/Login.php"</script>'; // 
     }
 }
 else {
-    echo'<script>location.href="../../../index.html"</script>';
+    echo'<script>location.href="../../pages/login/Login.php"</script>';
 }
 ?>
 <!DOCTYPE html>
@@ -44,76 +44,34 @@ else {
     <div class="flex">
     <nav class="min-h-60 w-1/5 bg-[#0B0D17] text-white grid-rows-4 grid items-center justify-center pt-3">
         <div class="grid gap-4">
-            <button onclick="dash()" class="text-xl font-bold hover:text-[#4CAF4F]" href="">Dashbord</button>
-            <button onclick="user()" class="text-xl font-bold hover:text-[#4CAF4F]" href="">Users</button>
-            <button onclick="admin()" class="text-xl font-bold hover:text-[#4CAF4F]" href="">Admins</button>
+            <!-- <button onclick="dash()" class="text-xl font-bold hover:text-[#4CAF4F]" href="">Dashbord</button> -->
+            <button onclick="user()" class="text-xl font-bold hover:text-[#4CAF4F]" href="">Projects</button>
+            <button onclick="admin()" class="text-xl font-bold hover:text-[#4CAF4F]" href="">Companies</button>
+            <button onclick="dash()" class="text-xl font-bold hover:text-[#4CAF4F]">Partners</button>
         </div>
     </nav>
-    <main id="dash" class="w-3/5">
-        <div class="p-2 m-2 font-bold bg-white rounded-lg drop-shadow-lg grid grid-cols-3 justify-between items-center">
-            <p>total accounts</p>
-            <p class="col-start-2">banned accounts</p>
-            <p class="col-start-3">activated accounts</p>
-            <?php
-            require_once "../../../lib/php/classes/Connect.php";
-            $conn = new connect();
-            $stmt = $conn->setdb("manager","SELECT * FROM signup");
-            $stmt->execute();
-            $result = $stmt->get_result();
-            echo'<p>'.$result->num_rows.'</p>';
-            $stmt = $conn->setdb("manager","SELECT * FROM signup WHERE banned=TRUE");
-            $stmt->execute();
-            $result = $stmt->get_result();
-            echo'<p>'.$result->num_rows.'</p>';
-            $stmt = $conn->setdb("manager","SELECT * FROM signup WHERE activated=TRUE");
-            $stmt->execute();
-            $result = $stmt->get_result();
-            echo'<p>'.$result->num_rows.'</p>';
-            ?>
-        </div>
-    </main>
-    <main id="user" class="w-3/5 hidden">
+    <main id="user" class="w-3/5">
         <div class="p-2 m-2 font-bold bg-white rounded-lg drop-shadow-lg grid grid-cols-8 justify-between items-center">
-            <p>Email</p>
-            <p class="col-start-4">Username</p>
-            <p class="col-start-6">Status</p>
-            <p class="col-start-8">activation</p>
+            <p>name</p>
+            <p class="col-start-3">description</p>
+            <p class="col-start-6">technologies</p>
+            <p class="col-start-8">github</p>
         </div>
         <?php
         require_once "../../../lib/php/classes/Connect.php";
         $conn = new connect();
-        $stmt = $conn->setdb("manager","SELECT * FROM signup");
+        $stmt = $conn->setdb("manager","SELECT * FROM signup INNER JOIN projects where signup.id = projects.account_id and email=?;");
+        $stmt->bind_param("s",$_SESSION["email"]);
         $stmt->execute();
         $result = $stmt->get_result();
-        // echo $result->num_rows;
         while($row = $result->fetch_assoc()){
                 echo '<div class="p-2 m-2 bg-white rounded-lg drop-shadow-lg grid grid-cols-8 justify-between items-center">
-                    <p class="">',$row["email"],'</p>
-                    <p class="col-start-4">',$row["user"],'</p>';
-                    if ($row["banned"]==0) { 
-                        echo '<form class="col-start-6" method="post">
-                                <input type="hidden" id="ban" name="ban" value=',$row["id"],'>
-                                <input type="submit" class="align-middle border border-red-600 text-red-600 hover:bg-red-600 hover:text-white p-1 rounded-md" width="20px" value="ban">
-                            </form>';
-                    }
-                    else{
-                        echo '<form class="col-start-6" method="post">
-                              <input type="hidden" id="unban" name="unban" value=',$row["id"],'>
-                              <input type="submit" class="align-middle border border-[#4CAF4F] text-[#4CAF4F] hover:bg-[#4CAF4F] hover:text-white p-1 rounded-md" width="20px" value="unban">
-                          </form>';
-                    };
-                    if ($row["activated"]==0) { 
-                    echo '<form class="col-start-8" method="post">
-                            <input type="hidden" id="activate" name="activate" value=',$row["id"],'>
-                            <input type="submit" class="align-middle border border-[#4CAF4F] text-[#4CAF4F] hover:bg-[#4CAF4F] hover:text-white p-1 rounded-md" width="20px" value="activate">
-                        </form>';
-                }
-                else{
-                    echo '<form class="col-start-8" method="post">
-                          <input type="hidden" id="deactivate" name="deactivate" value=',$row["id"],'>
-                          <input type="submit" class="align-middle border border-red-600 text-red-600 hover:bg-red-600 hover:text-white p-1 rounded-md" width="20px" value="deactivate">
-                      </form>';
-                };
+                    <p class="">',$row["name"],'</p>
+                    <p class="col-start-3">',$row["description"],'</p>
+                    <p class="col-start-6">',$row["technologies"],'</p>
+                    <p class="col-start-8">',$row["github"],'</p>'
+                    ;
+                    
                 echo '</div>';
         };
         function ispost($posted){
@@ -121,6 +79,48 @@ else {
                 $user = (int) $_POST[$posted];
                 return $user;
             };
+        };
+        $useractiv=ispost("activate");
+        $userdeactiv=ispost("deactivate");
+        $userban=ispost("ban");
+        $userunban=ispost("unban");
+        $activ= $conn->setdb("manager","UPDATE signup SET activated=TRUE WHERE id = ?;");
+        $activ->bind_param("i",$useractiv);
+        $activ->execute();
+        $deactiv= $conn->setdb("manager","UPDATE signup SET activated=FALSE WHERE id = ?;");
+        $deactiv->bind_param("i",$userdeactiv);
+        $deactiv->execute();
+        $ban= $conn->setdb("manager","UPDATE signup SET banned=true WHERE id = ?;");
+        $ban->bind_param("i",$userban);
+        $ban->execute();
+        $unban= $conn->setdb("manager","UPDATE signup SET banned=FALSE WHERE id = ?;");
+        $unban->bind_param("i",$userunban);
+        $unban->execute();
+        ?>
+    </main>
+    <main id="dash" class="w-3/5 hidden">
+        <div class="p-2 m-2 font-bold bg-white rounded-lg drop-shadow-lg grid grid-cols-8 justify-between items-center">
+            <p>name</p>
+            <p class="col-start-3">description</p>
+            <p class="col-start-6">technologies</p>
+            <p class="col-start-8">github</p>
+        </div>
+        <?php
+        require_once "../../../lib/php/classes/Connect.php";
+        $conn = new connect();
+        $stmt = $conn->setdb("manager","SELECT * FROM signup INNER JOIN projects where signup.id = projects.account_id and email=?;");
+        $stmt->bind_param("s",$_SESSION["email"]);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while($row = $result->fetch_assoc()){
+                echo '<div class="p-2 m-2 bg-white rounded-lg drop-shadow-lg grid grid-cols-8 justify-between items-center">
+                    <p class="">',$row["name"],'</p>
+                    <p class="col-start-3">',$row["description"],'</p>
+                    <p class="col-start-6">',$row["technologies"],'</p>
+                    <p class="col-start-8">',$row["github"],'</p>'
+                    ;
+                    
+                echo '</div>';
         };
         $useractiv=ispost("activate");
         $userdeactiv=ispost("deactivate");
