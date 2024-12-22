@@ -10,14 +10,17 @@ if (isset($_SESSION["email"]) and isset($_SESSION["pwd"])) {
     $stmt->bind_param("s",$_SESSION["email"]);
     $stmt->execute();
     $result = $stmt->get_result();
-    $stat = $conn->setdb("manager","SELECT * FROM signup where email=?");
+    $stat = $conn->setdb("manager","SELECT * FROM signup where email=?;");
     $stat->bind_param("s",$_SESSION["email"]);
     $stat->execute();
     $resultregulare = $stat->get_result();
+    var_dump( ($active->fetch_assoc())["activated"]);
     if ($result->num_rows==1) {
         require "../admin/dash.php";
-    }elseif($resultregulare->num_rows>=1) {
+    }elseif($resultregulare->num_rows==1 and ($resultregulare->fetch_assoc())["activated"]===true) {
         require '../profile/profile.php';
+    }elseif($resultregulare->num_rows==1) {
+        require '../profile/profile_unactive.php';
     }
 
 }
